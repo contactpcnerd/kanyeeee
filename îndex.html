@@ -35,8 +35,10 @@
     </div>
 
     <script>
-        // The Render deployment webhook URL provided by the user
-        const DEPLOY_URL = 'https://api.render.com/deploy/srv-d3fatis9c44c73fi8sl0?key=WWsLTKhuCrk';
+        // 🚨 IMPORTANT: Replace this placeholder with your actual Render Deploy Hook URL.
+        // You can find this URL in your Render service dashboard under 'Settings' > 'Deploy Hook'.
+        // Example format: 'https://api.render.com/deploy/srv-abcdefg1234567890?key=YOUR_SECRET_KEY'
+        const DEPLOY_URL = 'YOUR_RENDER_DEPLOY_HOOK_URL_HERE';
         
         const deployButton = document.getElementById('deployButton');
         const statusMessage = document.getElementById('statusMessage');
@@ -45,6 +47,13 @@
          * Handles the click event for the deploy button, sending a POST request to the webhook.
          */
         async function handleDeploy() {
+            if (DEPLOY_URL === 'https://api.render.com/deploy/srv-d3fatis9c44c73fi8sl0?key=WWsLTKhuCrk') {
+                // Display error message if the URL hasn't been updated
+                statusMessage.textContent = 'Please update the DEPLOY_URL in the script tag with your actual hook.';
+                statusMessage.className = 'text-sm font-medium h-6 text-center text-red-600';
+                return;
+            }
+
             statusMessage.textContent = 'Sending deployment request...';
             statusMessage.className = 'text-sm font-medium h-6 text-center text-gray-500';
             deployButton.disabled = true;
@@ -59,11 +68,13 @@
                 });
 
                 if (response.ok) {
+                    // Render typically returns a 204 or 200 on success, even if the deployment hasn't started yet.
                     statusMessage.textContent = 'Deployment triggered successfully! Check Render dashboard.';
                     statusMessage.classList.add('text-green-600');
                 } else {
+                    // This is where the 404/Not Found error would be caught.
                     const errorDetails = await response.text();
-                    statusMessage.textContent = `Error ${response.status}: Failed to trigger deploy.`;
+                    statusMessage.textContent = `Error ${response.status}: Failed to trigger deploy. (Check your hook URL)`;
                     statusMessage.classList.add('text-red-600');
                     console.error('Deployment failure response:', errorDetails);
                 }
